@@ -14,3 +14,11 @@ Validate extension JSON: Error: Field 'classes/ShapeCast2D/properties/collision_
 Validate extension JSON: Error: Field 'classes/ShapeCast3D/properties/collision_result': getter changed value in new API, from "_get_collision_result" to &"get_collision_result".
 
 These getters have been renamed to expose them. GDExtension language bindings couldn't have exposed these properties before.
+
+
+GH-89919
+--------
+Validate extension JSON: Error: Field 'classes/LightmapGIData/methods/add_user/arguments': size changed value in new API, from 4 to 5.
+Validate extension JSON: Error: Field 'classes/RenderingServer/methods/instance_geometry_set_lightmap/arguments': size changed value in new API, from 4 to 5.
+
+Optional arguments added. Compatibility methods registered.

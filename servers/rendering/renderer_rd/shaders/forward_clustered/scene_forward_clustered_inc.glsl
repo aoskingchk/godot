@@ -96,6 +96,7 @@ struct Lightmap {
 	mat3 normal_xform;
 	vec3 pad;
 	float exposure_normalization;
+	vec2 light_texture_size;
 };
 
 layout(set = 0, binding = 7, std140) restrict readonly buffer Lightmaps {
@@ -217,6 +218,9 @@ struct InstanceData {
 	vec4 compressed_aabb_position_pad; // Only .xyz is used. .w is padding.
 	vec4 compressed_aabb_size_pad; // Only .xyz is used. .w is padding.
 	vec4 uv_scale;
+	vec2 lightmap_texture_size; // Used for bicubic filtering in the scene shader.
+	uint pad0;
+	uint pad1;
 };
 
 layout(set = 1, binding = 2, std430) buffer restrict readonly InstanceDataBuffer {
