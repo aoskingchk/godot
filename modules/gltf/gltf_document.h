@@ -86,6 +86,10 @@ public:
 	static void unregister_all_gltf_document_extensions();
 	static Vector<Ref<GLTFDocumentExtension>> get_all_gltf_document_extensions();
 
+	static NodePath _find_material_node_path(Ref<GLTFState> p_state, Ref<Material> p_material);
+	static Ref<GLTFObjectModelProperty> import_object_model_property(Ref<GLTFState> p_state, const String &p_json_pointer);
+	static Ref<GLTFObjectModelProperty> export_object_model_property(Ref<GLTFState> p_state, const NodePath &p_node_path, const Node *p_godot_node, GLTFNodeIndex p_gltf_node_index);
+
 	void set_naming_version(int p_version);
 	int get_naming_version() const;
 	void set_image_format(const String &p_image_format);
