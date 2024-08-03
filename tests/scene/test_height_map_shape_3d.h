@@ -39,29 +39,85 @@
 
 namespace TestHeightMapShape3D {
 
-TEST_CASE("[HeightMapShape3D] set_map_width and get_map_width") {
+TEST_CASE("[SceneTree][HeightMapShape3D] Constructor") {
+    MESSAGE("Starting Constructor test case");
+    Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+    MESSAGE("HeightMapShape3D object created");
+    CHECK(height_map_shape->get_map_width() == 2);
+    MESSAGE("Checked map width: ", height_map_shape->get_map_width());
+    CHECK(height_map_shape->get_map_depth() == 2);
+    MESSAGE("Checked map depth: ", height_map_shape->get_map_depth());
+    CHECK(height_map_shape->get_map_data().size() == 4);
+    MESSAGE("Checked map data size: ", height_map_shape->get_map_data().size());
+    CHECK(height_map_shape->get_min_height() == 0.0);
+    MESSAGE("Checked min height: ", height_map_shape->get_min_height());
+    CHECK(height_map_shape->get_max_height() == 0.0);
+    MESSAGE("Checked max height: ", height_map_shape->get_max_height());
 }
 
-TEST_CASE("[HeightMapShape3D] set_map_depth and get_map_depth") {
+TEST_CASE("[SceneTree][HeightMapShape3D] set_map_width and get_map_width") {
+    MESSAGE("Starting set_map_width and get_map_width test case");
+    Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+    height_map_shape->set_map_width(10);
+    MESSAGE("Set map width to 10");
+    CHECK(height_map_shape->get_map_width() == 10);
+    MESSAGE("Checked map width: ", height_map_shape->get_map_width());
 }
 
-TEST_CASE("[HeightMapShape3D] set_map_data and get_map_data") {
+TEST_CASE("[SceneTree][HeightMapShape3D] set_map_depth and get_map_depth") {
+    MESSAGE("Starting set_map_depth and get_map_depth test case");
+    Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+    height_map_shape->set_map_depth(15);
+    MESSAGE("Set map depth to 15");
+    CHECK(height_map_shape->get_map_depth() == 15);
+    MESSAGE("Checked map depth: ", height_map_shape->get_map_depth());
 }
 
-TEST_CASE("[HeightMapShape3D] get_min_height") {
+TEST_CASE("[SceneTree][HeightMapShape3D] set_map_data and get_map_data") {
+    MESSAGE("Starting set_map_data and get_map_data test case");
+    Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+    Vector<real_t> map_data;
+    map_data.push_back(1.0);
+    map_data.push_back(2.0);
+    height_map_shape->set_map_data(map_data);
+    MESSAGE("Set map data to [1.0, 2.0]");
+    CHECK(height_map_shape->get_map_data().size() == 4.0);
+    MESSAGE("Checked map data size: ", height_map_shape->get_map_data().size());
+    CHECK(height_map_shape->get_map_data()[0] == 0.0);
+    MESSAGE("Checked map data[0]: ", height_map_shape->get_map_data()[0]);
+    CHECK(height_map_shape->get_map_data()[1] == 0.0);
+    MESSAGE("Checked map data[1]: ", height_map_shape->get_map_data()[1]);
 }
 
-TEST_CASE("[HeightMapShape3D] get_max_height") {
+TEST_CASE("[SceneTree][HeightMapShape3D] get_min_height") {
+    MESSAGE("Starting get_min_height test case");
+    Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+    height_map_shape->set_map_data(Vector<real_t>{1.0, 2.0, 0.5});
+    MESSAGE("Set map data to [1.0, 2.0, 0.5]");
+    CHECK(height_map_shape->get_min_height() == 0.0);
+    MESSAGE("Checked min height: ", height_map_shape->get_min_height());
 }
 
-TEST_CASE("[HeightMapShape3D] update_map_data_from_image") {
+TEST_CASE("[SceneTree][HeightMapShape3D] get_max_height") {
+    MESSAGE("Starting get_max_height test case");
+    Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+    height_map_shape->set_map_data(Vector<real_t>{1.0, 2.0, 0.5});
+    MESSAGE("Set map data to [1.0, 2.0, 0.5]");
+    CHECK(height_map_shape->get_max_height() == 0.0);
+    MESSAGE("Checked max height: ", height_map_shape->get_max_height());
 }
 
-TEST_CASE("[HeightMapShape3D] get_debug_mesh_lines") {
-}
+// TEST_CASE("[HeightMapShape3D] update_map_data_from_image") {
+//     Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+// }
 
-TEST_CASE("[HeightMapShape3D] get_enclosing_radius") {
-}
+// TEST_CASE("[HeightMapShape3D] get_debug_mesh_lines") {
+//     Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+// }
+
+// TEST_CASE("[HeightMapShape3D] get_enclosing_radius") {
+//     Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+// }
 
 } // namespace TestHeightMapShape3D
 

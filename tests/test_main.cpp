@@ -110,6 +110,7 @@
 #include "tests/scene/test_curve_2d.h"
 #include "tests/scene/test_curve_3d.h"
 #include "tests/scene/test_gradient.h"
+#include "tests/scene/test_height_map_shape_3d.h"
 #include "tests/scene/test_image_texture.h"
 #include "tests/scene/test_image_texture_3d.h"
 #include "tests/scene/test_instance_placeholder.h"
