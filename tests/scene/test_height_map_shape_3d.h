@@ -92,7 +92,7 @@ TEST_CASE("[SceneTree][HeightMapShape3D] update_map_data_from_image") {
 	// Create a HeightMapShape3D instance.
 	Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
 
-	// Create a mock image with FORMAT_R8 and set its data
+	// Create a mock image with FORMAT_R8 and set its data.
 	Vector<uint8_t> image_data;
 	image_data.push_back(0);
 	image_data.push_back(128);
@@ -102,7 +102,6 @@ TEST_CASE("[SceneTree][HeightMapShape3D] update_map_data_from_image") {
 	Ref<Image> image = memnew(Image);
 	image->set_data(2, 2, false, Image::FORMAT_R8, image_data);
 
-	// Call the function with the mock image
 	height_map_shape->update_map_data_from_image(image, 0.0, 10.0);
 
 	// Check the map data.
@@ -114,7 +113,7 @@ TEST_CASE("[SceneTree][HeightMapShape3D] update_map_data_from_image") {
 		CHECK(Math::abs(actual_map_data[i] - expected_map_data[i]) < tolerance);
 	}
 
-	// Check the min and max heights
+	// Check the min and max heights.
 	CHECK(height_map_shape->get_min_height() == 0.0);
 	CHECK(height_map_shape->get_max_height() == 10.0);
 }
