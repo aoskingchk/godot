@@ -31,7 +31,6 @@
 #ifndef TEST_HEIGHT_MAP_SHAPE_3D_H
 #define TEST_HEIGHT_MAP_SHAPE_3D_H
 
-#include "core/io/image.h"
 #include "scene/resources/3d/height_map_shape_3d.h"
 #include "scene/resources/image_texture.h"
 
@@ -74,8 +73,11 @@ TEST_CASE("[SceneTree][HeightMapShape3D] set_map_data and get_map_data") {
 
 TEST_CASE("[SceneTree][HeightMapShape3D] get_min_height") {
 	Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+	height_map_shape->set_map_width(3);
+	height_map_shape->set_map_depth(1);
 	height_map_shape->set_map_data(Vector<real_t>{ 1.0, 2.0, 0.5 });
-	CHECK(height_map_shape->get_min_height() == 0.0);
+	MESSAGE("min height: ", height_map_shape->get_min_height());
+	CHECK(height_map_shape->get_min_height() == 0.5);
 }
 
 TEST_CASE("[SceneTree][HeightMapShape3D] get_max_height") {
@@ -87,7 +89,7 @@ TEST_CASE("[SceneTree][HeightMapShape3D] get_max_height") {
 }
 
 TEST_CASE("[SceneTree][HeightMapShape3D] update_map_data_from_image") {
-	// Create a HeightMapShape3D instance
+	// Create a HeightMapShape3D instance.
 	Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
 
 	// Create a mock image with FORMAT_R8 and set its data
@@ -103,13 +105,13 @@ TEST_CASE("[SceneTree][HeightMapShape3D] update_map_data_from_image") {
 	// Call the function with the mock image
 	height_map_shape->update_map_data_from_image(image, 0.0, 10.0);
 
-	// Check the map data
+	// Check the map data.
 	Vector<real_t> expected_map_data = { 0.0, 5.0, 10.0, 2.5 };
 	Vector<real_t> actual_map_data = height_map_shape->get_map_data();
 	real_t tolerance = 0.1;
 
 	for (int i = 0; i < expected_map_data.size(); ++i) {
-		CHECK(std::abs(actual_map_data[i] - expected_map_data[i]) < tolerance);
+		CHECK(Math::abs(actual_map_data[i] - expected_map_data[i]) < tolerance);
 	}
 
 	// Check the min and max heights
