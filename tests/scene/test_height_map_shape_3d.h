@@ -80,8 +80,10 @@ TEST_CASE("[SceneTree][HeightMapShape3D] get_min_height") {
 
 TEST_CASE("[SceneTree][HeightMapShape3D] get_max_height") {
 	Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
+	height_map_shape->set_map_width(3);
+	height_map_shape->set_map_depth(1);
 	height_map_shape->set_map_data(Vector<real_t>{ 1.0, 2.0, 0.5 });
-	CHECK(height_map_shape->get_max_height() == 0.0);
+	CHECK(height_map_shape->get_max_height() == 2.0);
 }
 
 TEST_CASE("[SceneTree][HeightMapShape3D] update_map_data_from_image") {
