@@ -33,6 +33,7 @@
 
 #include "scene/resources/3d/height_map_shape_3d.h"
 #include "core/io/image.h"
+#include "scene/resources/image_texture.h"
 
 #include "tests/test_macros.h"
 #include "tests/test_utils.h"
@@ -107,17 +108,40 @@ TEST_CASE("[SceneTree][HeightMapShape3D] get_max_height") {
     MESSAGE("Checked max height: ", height_map_shape->get_max_height());
 }
 
-// TEST_CASE("[HeightMapShape3D] update_map_data_from_image") {
-//     Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
-// }
+TEST_CASE("[SceneTree][HeightMapShape3D] update_map_data_from_image") {
+    MESSAGE("Starting update_map_data_from_image test case");
 
-// TEST_CASE("[HeightMapShape3D] get_debug_mesh_lines") {
-//     Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
-// }
+    // Create a HeightMapShape3D instance
+    Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
 
-// TEST_CASE("[HeightMapShape3D] get_enclosing_radius") {
-//     Ref<HeightMapShape3D> height_map_shape = memnew(HeightMapShape3D);
-// }
+    // Create a mock image with FORMAT_R8 and set its data
+    Vector<uint8_t> image_data;
+    image_data.push_back(0);
+    image_data.push_back(128);
+    image_data.push_back(255);
+    image_data.push_back(64);
+
+    Ref<Image> image = memnew(Image);
+    image->set_data(2, 2, false, Image::FORMAT_R8, image_data);
+
+    // Call the function with the mock image
+    height_map_shape->update_map_data_from_image(image, 0.0, 10.0);
+
+    // Check the map data
+    Vector<real_t> expected_map_data = {0.0, 5.0, 10.0, 2.5};
+    Vector<real_t> actual_map_data = height_map_shape->get_map_data();
+    real_t tolerance = 0.1;
+
+    for (int i = 0; i < expected_map_data.size(); ++i) {
+        CHECK(std::abs(actual_map_data[i] - expected_map_data[i]) < tolerance);
+    }
+
+    // Check the min and max heights
+    CHECK(height_map_shape->get_min_height() == 0.0);
+    CHECK(height_map_shape->get_max_height() == 10.0);
+
+    MESSAGE("Checked map data, min height, and max height");
+}
 
 } // namespace TestHeightMapShape3D
 
