@@ -176,8 +176,7 @@ int ENetPacketPeer::get_channels() const {
 }
 
 int ENetPacketPeer::get_packet_flags() const {
-	ERR_FAIL_NULL_V(peer, ERR_UNCONFIGURED);
-	ERR_FAIL_COND_V(packet_queue.is_empty(), ERR_UNAVAILABLE);
+	ERR_FAIL_COND_V(packet_queue.is_empty(), 0);
 	return packet_queue.front()->get()->flags;
 }
 
