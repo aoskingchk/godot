@@ -504,6 +504,70 @@ void SpriteFramesEditor::_update_show_settings() {
 	}
 }
 
+Size2i SpriteFramesEditor::_estimate_sprite_sheet_size(const Ref<Texture2D> texture) {
+	Size2i default_size = Size2i(4, 4);
+	Ref<Image> image = texture->get_image();
+	Size2i size = texture->get_size();
+
+	Color assumed_background_color = image->get_pixel(0, 0);
+
+	bool contiguous_lines = true;
+	int division_count = 1;
+	for (int x = 0; x < size.x; x++) {
+		bool background_vert_line = true;
+		for (int y = 0; y < size.y; y++) {
+			if (assumed_background_color != image->get_pixel(x, y)) {
+				background_vert_line = false;
+			}
+		}
+		if (contiguous_lines) {
+			if (!background_vert_line) {
+				contiguous_lines = false;
+			}
+		} else {
+			if (background_vert_line) {
+				contiguous_lines = true;
+				division_count++;
+			}
+		}
+	}
+	if (contiguous_lines && division_count > 1) {
+		division_count--;
+	}
+	default_size.x = division_count;
+
+	contiguous_lines = true;
+	division_count = 1;
+	for (int y = 0; y < size.y; y++) {
+		bool background_horiz_line = true;
+		for (int x = 0; x < size.x; x++) {
+			if (assumed_background_color != image->get_pixel(x, y)) {
+				background_horiz_line = false;
+			}
+		}
+		if (contiguous_lines) {
+			if (!background_horiz_line) {
+				contiguous_lines = false;
+			}
+		} else {
+			if (background_horiz_line) {
+				contiguous_lines = true;
+				division_count++;
+			}
+		}
+	}
+	if (contiguous_lines && division_count > 1) {
+		division_count--;
+	}
+	default_size.y = division_count;
+
+	if (default_size.x == 1 && default_size.y == 1) {
+		default_size.x = 4;
+		default_size.y = 4;
+	}
+	return default_size;
+}
+
 void SpriteFramesEditor::_prepare_sprite_sheet(const String &p_file) {
 	Ref<Texture2D> texture = ResourceLoader::load(p_file);
 	if (texture.is_null()) {
@@ -530,10 +594,11 @@ void SpriteFramesEditor::_prepare_sprite_sheet(const String &p_file) {
 			// Different texture, reset to 4x4.
 			dominant_param = PARAM_FRAME_COUNT;
 			updating_split_settings = true;
-			split_sheet_h->set_value(4);
-			split_sheet_v->set_value(4);
-			split_sheet_size_x->set_value(size.x / 4);
-			split_sheet_size_y->set_value(size.y / 4);
+			const Size2i split_sheet = _estimate_sprite_sheet_size(texture);
+			split_sheet_h->set_value(split_sheet.x);
+			split_sheet_v->set_value(split_sheet.y);
+			split_sheet_size_x->set_value(size.x / split_sheet.x);
+			split_sheet_size_y->set_value(size.y / split_sheet.y);
 			split_sheet_sep_x->set_value(0);
 			split_sheet_sep_y->set_value(0);
 			split_sheet_offset_x->set_value(0);
