@@ -61,8 +61,8 @@ private:
 
 	struct Joypad {
 		float curr_axis[MAX_ABS];
-		int key_map[MAX_KEY];
-		int abs_map[MAX_ABS];
+		int key_map[MAX_KEY] = { -1 };
+		int abs_map[MAX_ABS] = { -1 };
 		BitField<HatMask> dpad;
 		int fd = -1;
 
@@ -111,6 +111,8 @@ private:
 
 	static void monitor_joypads_thread_func(void *p_user);
 	void monitor_joypads_thread_run();
+
+	void _auto_remap(const Joypad &p_joypad, const StringName &p_guid, const String &p_name, bool p_hat0x_exist, bool p_hat0y_exist);
 
 	void open_joypad(const char *p_path);
 	void setup_joypad_properties(Joypad &p_joypad);
