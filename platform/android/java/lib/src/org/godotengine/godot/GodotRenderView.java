@@ -59,8 +59,6 @@ public interface GodotRenderView {
 
 	void onActivityDestroyed();
 
-	void onBackPressed();
-
 	GodotInputHandler getInputHandler();
 
 	void configurePointerIcon(int pointerType, String imagePath, float hotSpotX, float hotSpotY);

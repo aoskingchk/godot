@@ -124,11 +124,6 @@ class GodotVulkanRenderView extends VkSurfaceView implements GodotRenderView {
 	}
 
 	@Override
-	public void onBackPressed() {
-		godot.onBackPressed();
-	}
-
-	@Override
 	public GodotInputHandler getInputHandler() {
 		return mInputHandler;
 	}

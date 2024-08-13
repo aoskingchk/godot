@@ -847,15 +847,10 @@ class Godot(private val context: Context) : SensorEventListener {
 	}
 
 	fun onBackPressed() {
-		var shouldQuit = true
 		for (plugin in pluginRegistry.allPlugins) {
-			if (plugin.onMainBackPressed()) {
-				shouldQuit = false
-			}
+			plugin.onMainBackPressed()
 		}
-		if (shouldQuit) {
-			renderView?.queueOnRenderThread { GodotLib.back() }
-		}
+		renderView?.queueOnRenderThread { GodotLib.back() }
 	}
 
 	private fun getRotatedValues(values: FloatArray?): FloatArray? {

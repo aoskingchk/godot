@@ -3226,6 +3226,17 @@ void ScriptEditor::input(const Ref<InputEvent> &p_event) {
 			}
 		}
 	}
+
+	const Ref<InputEventKey> key = p_event;
+	if (key.is_valid() && key->is_pressed() && is_visible_in_tree()) {
+		if (key->get_keycode() == Key::BACK) {
+			_history_back();
+		}
+
+		if (key->get_keycode() == Key::FORWARD) {
+			_history_forward();
+		}
+	}
 }
 
 void ScriptEditor::shortcut_input(const Ref<InputEvent> &p_event) {
