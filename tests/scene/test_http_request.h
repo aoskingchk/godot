@@ -157,6 +157,73 @@ TEST_CASE("[Network][HTTPRequest][SceneTree] GET Request") {
 	memdelete(http_request);
 }
 
+TEST_CASE("[Network][HTTPRequest][SceneTree] GET Request with body and headers") {
+	HTTPClientMock::make_current();
+	HTTPRequest *http_request = memnew(HTTPRequest);
+	SceneTree::get_singleton()->get_root()->add_child(http_request);
+	HTTPClientMock *http_client = HTTPClientMock::current_instance;
+	PackedByteArray body = String("Godot Rules!!!").to_utf8_buffer();
+
+	When(http_client->get_status).Return({ HTTPClient::STATUS_RESOLVING, HTTPClient::STATUS_CONNECTING, HTTPClient::STATUS_CONNECTED, HTTPClient::STATUS_BODY });
+	When(http_client->get_response_code).Return(HTTPClient::ResponseCode::RESPONSE_OK);
+	When(http_client->has_response).Return(true);
+	When(http_client->get_response_headers).Do([](List<String> *r_response) -> Error {
+		r_response->push_front("Server: Mock");
+		return Error::OK;
+	});
+	When(http_client->get_response_body_length).Return(body.size());
+	When(http_client->read_response_body_chunk).Return(body);
+	SIGNAL_WATCH(http_request, "request_completed");
+
+	String url = "http://foo.com";
+	Error error = http_request->request(url);
+
+	// Call process for each status
+	for (int i = 0; i < 4; i++) {
+		SceneTree::get_singleton()->process(0);
+	}
+
+	Verify(http_client->request).With(HTTPClient::Method::METHOD_GET, String("/"), build_headers("Accept-Encoding: gzip, deflate"), (uint8_t *)nullptr, 0).Times(1);
+	SIGNAL_CHECK("request_completed",
+			build_array(build_array(HTTPRequest::Result::RESULT_SUCCESS, HTTPClient::ResponseCode::RESPONSE_OK, build_headers("Server: Mock"), body)));
+	CHECK_FALSE(http_request->is_processing_internal());
+	CHECK(error == Error::OK);
+
+	SIGNAL_UNWATCH(http_request, "request_completed");
+	memdelete(http_request);
+}
+
+TEST_CASE("[Network][HTTPRequest][SceneTree] POST Request with body and headers") {
+	HTTPClientMock::make_current();
+	HTTPRequest *http_request = memnew(HTTPRequest);
+	SceneTree::get_singleton()->get_root()->add_child(http_request);
+	HTTPClientMock *http_client = HTTPClientMock::current_instance;
+	String body("Godot Rules!!!");
+
+	When(http_client->get_status).Return({ HTTPClient::STATUS_RESOLVING, HTTPClient::STATUS_CONNECTING,
+			// First STATUS_CONNECTED is to send the request, second STATUS_CONNECTED is to receive request
+			HTTPClient::STATUS_CONNECTED, HTTPClient::STATUS_CONNECTED });
+	When(http_client->get_response_code).Return(HTTPClient::ResponseCode::RESPONSE_CREATED);
+	When(http_client->has_response).Return(true);
+	SIGNAL_WATCH(http_request, "request_completed");
+
+	String url = "http://foo.com";
+	Error error = http_request->request(url, build_headers("Accept: text/json"), HTTPClient::Method::METHOD_POST, body);
+
+	// Call process for each status
+	for (int i = 0; i < 4; i++) {
+		SceneTree::get_singleton()->process(0);
+	}
+
+	Verify(http_client->request).With(HTTPClient::Method::METHOD_POST, String("/"), build_headers("Accept-Encoding: gzip, deflate", "Accept: text/json"), cpp_mock::matching::any_matcher(), body.size() - 1).Times(1);
+	SIGNAL_CHECK("request_completed", build_array(build_array(HTTPRequest::Result::RESULT_SUCCESS, HTTPClient::ResponseCode::RESPONSE_CREATED, PackedStringArray(), PackedByteArray())));
+	CHECK_FALSE(http_request->is_processing_internal());
+	CHECK(error == Error::OK);
+
+	SIGNAL_UNWATCH(http_request, "request_completed");
+	memdelete(http_request);
+}
+
 } // namespace TestHTTPRequest
 
 #endif // TEST_HTTP_REQUEST_H
