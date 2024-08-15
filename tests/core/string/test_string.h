@@ -1922,17 +1922,17 @@ TEST_CASE("[String] Variant ptr indexed set") {
 }
 
 TEST_CASE("[String][URL] Parse URL") {
-#define CHECK_URL(url_to_parse, expected_schema, expected_host, expected_port, expected_path, expected_error)	\
-	do {																																																				\
-		int port;																																																	\
-		String url(url_to_parse), schema, host, path;																															\
-																																																							\
-		CHECK_EQ(expected_error, url.parse_url(schema, host, port, path));																				\
-		CHECK_EQ(expected_schema, schema);																																				\
-		CHECK_EQ(expected_host, host);																																						\
-		CHECK_EQ(expected_path, path);																																						\
-		CHECK_EQ(expected_port, port);																																						\
-	} while(false)
+#define CHECK_URL(url_to_parse, expected_schema, expected_host, expected_port, expected_path, expected_error) \
+	do {                                                                                                      \
+		int port;                                                                                             \
+		String url(url_to_parse), schema, host, path;                                                         \
+                                                                                                              \
+		CHECK_EQ(expected_error, url.parse_url(schema, host, port, path));                                    \
+		CHECK_EQ(expected_schema, schema);                                                                    \
+		CHECK_EQ(expected_host, host);                                                                        \
+		CHECK_EQ(expected_path, path);                                                                        \
+		CHECK_EQ(expected_port, port);                                                                        \
+	} while (false)
 
 	// Valid URLs
 	CHECK_URL("https://godotengine.org", "https://", "godotengine.org", 0, "", Error::OK);
