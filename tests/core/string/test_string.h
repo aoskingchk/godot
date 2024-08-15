@@ -1938,6 +1938,7 @@ TEST_CASE("[String][URL] Parse URL") {
 	CHECK_URL("https://godotengine.org", "https://", "godotengine.org", 0, "", Error::OK);
 	CHECK_URL("https://godotengine.org/", "https://", "godotengine.org", 0, "/", Error::OK);
 	CHECK_URL("godotengine.org/", "", "godotengine.org", 0, "/", Error::OK);
+	CHECK_URL("HTTPS://godotengine.org/", "https://", "godotengine.org", 0, "/", Error::OK);
 	CHECK_URL("https://GODOTENGINE.ORG/", "https://", "godotengine.org", 0, "/", Error::OK);
 	CHECK_URL("http://godotengine.org", "http://", "godotengine.org", 0, "", Error::OK);
 	CHECK_URL("https://godotengine.org:8080", "https://", "godotengine.org", 8080, "", Error::OK);
