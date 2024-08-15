@@ -72,6 +72,7 @@ TEST_CASE("[Network][HTTPRequest] Download chunk size is set when HTTP client is
 	Verify(http_client->set_read_chunk_size).With(expected_value);
 
 	memdelete(http_request);
+	HTTPClientMock::reset_current();
 }
 
 TEST_CASE("[Network][HTTPRequest] Download chunk size is not set when HTTP client is not disconnected") {
@@ -89,6 +90,7 @@ TEST_CASE("[Network][HTTPRequest] Download chunk size is not set when HTTP clien
 	Verify(http_client->set_read_chunk_size).With(expected_value).Times(0);
 
 	memdelete(http_request);
+	HTTPClientMock::reset_current();
 }
 
 TEST_CASE("[Network][HTTPRequest] ERR_UNCONFIGURED when HTTPRequest is not inside tree") {
@@ -103,6 +105,7 @@ TEST_CASE("[Network][HTTPRequest] ERR_UNCONFIGURED when HTTPRequest is not insid
 	CHECK(error == Error::ERR_UNCONFIGURED);
 
 	memdelete(http_request);
+	HTTPClientMock::reset_current();
 }
 
 TEST_CASE("[Network][HTTPRequest][SceneTree] Request when disconnected") {
@@ -125,6 +128,7 @@ TEST_CASE("[Network][HTTPRequest][SceneTree] Request when disconnected") {
 
 	SIGNAL_UNWATCH(http_request, "request_completed");
 	memdelete(http_request);
+	HTTPClientMock::reset_current();
 }
 
 TEST_CASE("[Network][HTTPRequest][SceneTree] GET Request") {
@@ -155,6 +159,7 @@ TEST_CASE("[Network][HTTPRequest][SceneTree] GET Request") {
 
 	SIGNAL_UNWATCH(http_request, "request_completed");
 	memdelete(http_request);
+	HTTPClientMock::reset_current();
 }
 
 TEST_CASE("[Network][HTTPRequest][SceneTree] GET Request with body and headers") {
@@ -191,6 +196,7 @@ TEST_CASE("[Network][HTTPRequest][SceneTree] GET Request with body and headers")
 
 	SIGNAL_UNWATCH(http_request, "request_completed");
 	memdelete(http_request);
+	HTTPClientMock::reset_current();
 }
 
 TEST_CASE("[Network][HTTPRequest][SceneTree] POST Request with body and headers") {
@@ -222,6 +228,7 @@ TEST_CASE("[Network][HTTPRequest][SceneTree] POST Request with body and headers"
 
 	SIGNAL_UNWATCH(http_request, "request_completed");
 	memdelete(http_request);
+	HTTPClientMock::reset_current();
 }
 
 } // namespace TestHTTPRequest
