@@ -1231,6 +1231,17 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 			EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 			undo_redo->create_action(TTR("Add Bezier Point"));
 			undo_redo->add_do_method(animation.ptr(), "bezier_track_insert_key", selected_track, time, new_point[0], Vector2(new_point[1], new_point[2]), Vector2(new_point[3], new_point[4]));
+			int k_idx = animation->track_find_key(selected_track, time) + 1;
+			switch (int(EDITOR_GET("editors/animation/default_bezier_key_behavior"))) {
+				case Animation::DEFAULT_BEZIER_KEY_BEHAVIOR_BALANCED_AUTOMATIC: {
+					undo_redo->add_do_method(editor, "_bezier_track_set_key_handle_mode", animation.ptr(), selected_track, k_idx, Animation::HANDLE_MODE_BALANCED, Animation::HANDLE_SET_MODE_AUTO);
+					break;
+				}
+				case Animation::DEFAULT_BEZIER_KEY_BEHAVIOR_MIRRORED_AUTOMATIC: {
+					undo_redo->add_do_method(editor, "_bezier_track_set_key_handle_mode", animation.ptr(), selected_track, k_idx, Animation::HANDLE_MODE_MIRRORED, Animation::HANDLE_SET_MODE_AUTO);
+					break;
+				}
+			}
 			undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", selected_track, time);
 			undo_redo->commit_action();
 
@@ -1670,6 +1681,17 @@ void AnimationBezierTrackEdit::_menu_selected(int p_index) {
 				EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 				undo_redo->create_action(TTR("Add Bezier Point"));
 				undo_redo->add_do_method(animation.ptr(), "track_insert_key", selected_track, time, new_point);
+				int k_idx = animation->track_find_key(selected_track, time) + 1;
+				switch (int(EDITOR_GET("editors/animation/default_bezier_key_behavior"))) {
+					case Animation::DEFAULT_BEZIER_KEY_BEHAVIOR_BALANCED_AUTOMATIC: {
+						undo_redo->add_do_method(editor, "_bezier_track_set_key_handle_mode", animation.ptr(), selected_track, k_idx, Animation::HANDLE_MODE_BALANCED, Animation::HANDLE_SET_MODE_AUTO);
+						break;
+					}
+					case Animation::DEFAULT_BEZIER_KEY_BEHAVIOR_MIRRORED_AUTOMATIC: {
+						undo_redo->add_do_method(editor, "_bezier_track_set_key_handle_mode", animation.ptr(), selected_track, k_idx, Animation::HANDLE_MODE_MIRRORED, Animation::HANDLE_SET_MODE_AUTO);
+						break;
+					}
+				}
 				undo_redo->add_undo_method(this, "_clear_selection_for_anim", animation);
 				undo_redo->add_undo_method(animation.ptr(), "track_remove_key_at_time", selected_track, time);
 				undo_redo->commit_action();
