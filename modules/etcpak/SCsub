@@ -15,6 +15,7 @@ thirdparty_sources = [
     "ProcessDxtc.cpp",
     "ProcessRGB.cpp",
     "Tables.cpp",
+    "bc7enc.cpp"
 ]
 thirdparty_sources = [thirdparty_dir + file for file in thirdparty_sources]
 

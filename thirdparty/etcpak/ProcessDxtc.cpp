@@ -1,3 +1,4 @@
+#include "bc7enc.h"
 #include "Dither.hpp"
 #include "ForceInline.hpp"
 #include "ProcessDxtc.hpp"
@@ -807,7 +808,7 @@ static etcpak_force_inline uint64_t ProcessAlpha_SSE( __m128i px0, __m128i px1, 
 }
 #endif
 
-void CompressDxt1( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
+void CompressBc1( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
 {
 #ifdef __AVX2__
     if( width%8 == 0 )
@@ -867,7 +868,7 @@ void CompressDxt1( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t w
     }
 }
 
-void CompressDxt1Dither( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
+void CompressBc1Dither( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
 {
     uint32_t buf[4*4];
     int i = 0;
@@ -899,7 +900,7 @@ void CompressDxt1Dither( const uint32_t* src, uint64_t* dst, uint32_t blocks, si
     while( --blocks );
 }
 
-void CompressDxt5( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
+void CompressBc3( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
 {
     int i = 0;
     auto ptr = dst;
@@ -1083,4 +1084,30 @@ void CompressBc5( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t wi
         *ptr++ = ProcessAlpha( &rg[16] );
 #endif
     } while( --blocks );
+}
+
+void CompressBc7( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width, const bc7enc_compress_block_params* params )
+{
+    int i = 0;
+    auto ptr = dst;
+    do
+    {
+        uint32_t rgba[4*4];
+
+        auto tmp = (char*)rgba;
+        memcpy( tmp,        src + width * 0, 4*4 );
+        memcpy( tmp + 4*4,  src + width * 1, 4*4 );
+        memcpy( tmp + 8*4,  src + width * 2, 4*4 );
+        memcpy( tmp + 12*4, src + width * 3, 4*4 );
+        src += 4;
+        if( ++i == width/4 )
+        {
+            src += width * 3;
+            i = 0;
+        }
+
+        bc7enc_compress_block( ptr, rgba, params );
+        ptr += 2;
+    }
+    while( --blocks );
 }
