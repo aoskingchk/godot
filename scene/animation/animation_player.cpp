@@ -299,6 +299,10 @@ bool AnimationPlayer::_blend_pre_process(double p_delta, int p_track_count, cons
 		return false;
 	}
 
+	if (playback.current.from->animation == nullptr) {
+		playback.current.from = &animation_set[playback.assigned];
+	}
+
 	tmp_from = playback.current.from->animation->get_instance_id();
 	end_reached = false;
 	end_notify = false;
