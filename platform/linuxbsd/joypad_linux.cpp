@@ -340,6 +340,82 @@ void JoypadLinux::setup_joypad_properties(Joypad &p_joypad) {
 	}
 }
 
+void JoypadLinux::_auto_remap(const Joypad &p_joypad, const StringName &p_guid, const String &p_name, bool p_hat0x_exist, bool p_hat0y_exist) {
+	if (p_joypad.key_map[BTN_GAMEPAD] == -1) {
+		return;
+	}
+
+	// Generate key mapping for JoyButton.
+
+	int joy_button_mappings[int(JoyButton::SDL_MAX)] = { int(JoyButton::INVALID) };
+
+	joy_button_mappings[int(JoyButton::A)] = p_joypad.key_map[BTN_A];
+	joy_button_mappings[int(JoyButton::B)] = p_joypad.key_map[BTN_B];
+	joy_button_mappings[int(JoyButton::X)] = p_joypad.key_map[BTN_X];
+	joy_button_mappings[int(JoyButton::Y)] = p_joypad.key_map[BTN_Y];
+	joy_button_mappings[int(JoyButton::BACK)] = p_joypad.key_map[BTN_SELECT];
+	joy_button_mappings[int(JoyButton::GUIDE)] = p_joypad.key_map[BTN_MODE];
+	joy_button_mappings[int(JoyButton::START)] = p_joypad.key_map[BTN_START];
+	joy_button_mappings[int(JoyButton::LEFT_STICK)] = p_joypad.key_map[BTN_THUMBL];
+	joy_button_mappings[int(JoyButton::RIGHT_STICK)] = p_joypad.key_map[BTN_THUMBR];
+	joy_button_mappings[int(JoyButton::LEFT_SHOULDER)] = p_joypad.key_map[BTN_TL];
+	joy_button_mappings[int(JoyButton::RIGHT_SHOULDER)] = p_joypad.key_map[BTN_TR];
+
+	if (!p_hat0y_exist) {
+		joy_button_mappings[int(JoyButton::DPAD_UP)] = p_joypad.key_map[BTN_DPAD_UP];
+		joy_button_mappings[int(JoyButton::DPAD_DOWN)] = p_joypad.key_map[BTN_DPAD_DOWN];
+	}
+	if (!p_hat0x_exist) {
+		joy_button_mappings[int(JoyButton::DPAD_LEFT)] = p_joypad.key_map[BTN_DPAD_LEFT];
+		joy_button_mappings[int(JoyButton::DPAD_RIGHT)] = p_joypad.key_map[BTN_DPAD_RIGHT];
+	}
+
+	joy_button_mappings[int(JoyButton::MISC1)] = p_joypad.key_map[KEY_RECORD] != -1 ? p_joypad.key_map[KEY_RECORD] : p_joypad.key_map[BTN_Z];
+
+	// joy_button_mappings[int(JoyButton::PADDLE1)] = p_joypad.key_map[BTN_DPAD_DOWN];
+	// joy_button_mappings[int(JoyButton::PADDLE2)] = p_joypad.key_map[BTN_DPAD_LEFT];
+	// joy_button_mappings[int(JoyButton::PADDLE3)] = p_joypad.key_map[BTN_DPAD_RIGHT];
+	// joy_button_mappings[int(JoyButton::PADDLE4)] = p_joypad.key_map[BTN_DPAD_UP];
+	// joy_button_mappings[int(JoyButton::TOUCHPAD)] = p_joypad.key_map[BTN_TOUCH];
+
+	// Generate key mapping for JoyAxis.
+
+	int joy_axis_mappings[int(JoyAxis::SDL_MAX)] = { int(JoyAxis::INVALID) };
+
+	joy_axis_mappings[int(JoyAxis::LEFT_X)] = p_joypad.abs_map[ABS_X];
+	joy_axis_mappings[int(JoyAxis::LEFT_Y)] = p_joypad.abs_map[ABS_Y];
+
+	bool right_is_r = p_joypad.abs_map[ABS_RX] != -1;
+	bool trigger_is_key = false;
+	int trigger_left = -1;
+	int trigger_right = -1;
+
+	if (right_is_r) {
+		joy_axis_mappings[int(JoyAxis::RIGHT_X)] = p_joypad.abs_map[ABS_RX];
+		joy_axis_mappings[int(JoyAxis::RIGHT_Y)] = p_joypad.abs_map[ABS_RY];
+
+		trigger_left = p_joypad.abs_map[ABS_BRAKE] != -1 ? p_joypad.abs_map[ABS_BRAKE] : p_joypad.abs_map[ABS_Z];
+		trigger_right = p_joypad.abs_map[ABS_GAS] != -1 ? p_joypad.abs_map[ABS_GAS] : p_joypad.abs_map[ABS_RZ];
+	} else {
+		joy_axis_mappings[int(JoyAxis::RIGHT_X)] = p_joypad.abs_map[ABS_Z];
+		joy_axis_mappings[int(JoyAxis::RIGHT_Y)] = p_joypad.abs_map[ABS_RZ];
+
+		trigger_left = p_joypad.abs_map[ABS_BRAKE];
+		trigger_right = p_joypad.abs_map[ABS_GAS];
+	}
+
+	if (trigger_left == -1 && trigger_right == -1) {
+		trigger_is_key = true;
+		trigger_left = p_joypad.key_map[BTN_TL2];
+		trigger_right = p_joypad.key_map[BTN_TR2];
+	}
+
+	joy_axis_mappings[int(JoyAxis::TRIGGER_LEFT)] = trigger_left;
+	joy_axis_mappings[int(JoyAxis::TRIGGER_RIGHT)] = trigger_right;
+
+	input->unknown_gamepad_auto_map(p_guid, p_name, joy_button_mappings, joy_axis_mappings, trigger_is_key);
+}
+
 void JoypadLinux::open_joypad(const char *p_path) {
 	int joy_num = input->get_unused_joy_id();
 	int fd = open(p_path, O_RDWR | O_NONBLOCK);
@@ -419,6 +495,12 @@ void JoypadLinux::open_joypad(const char *p_path) {
 				}
 			}
 
+			if (input->is_unknown_gamepad_auto_mapped() && !input->has_mapping(uid)) {
+				bool hat0x_exist = test_bit(ABS_HAT0X, absbit);
+				bool hat0y_exist = test_bit(ABS_HAT0Y, absbit);
+				_auto_remap(joypad, uid, name, hat0x_exist, hat0y_exist);
+			}
+
 			input->joy_connection_changed(joy_num, true, name, uid, joypad_info);
 		} else {
 			String uidname = uid;
@@ -427,6 +509,13 @@ void JoypadLinux::open_joypad(const char *p_path) {
 				uidname = uidname + _hex_str(name[i]);
 			}
 			uidname += "00";
+
+			if (input->is_unknown_gamepad_auto_mapped() && !input->has_mapping(uid)) {
+				bool hat0x_exist = test_bit(ABS_HAT0X, absbit);
+				bool hat0y_exist = test_bit(ABS_HAT0Y, absbit);
+				_auto_remap(joypad, uid, name, hat0x_exist, hat0y_exist);
+			}
+
 			input->joy_connection_changed(joy_num, true, name, uidname);
 		}
 	}
