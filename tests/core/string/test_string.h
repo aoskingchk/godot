@@ -1921,6 +1921,48 @@ TEST_CASE("[String] Variant ptr indexed set") {
 	CHECK_EQ(s, String("azcd"));
 }
 
+TEST_CASE("[String][URL] Parse URL") {
+#define CHECK_URL(url_to_parse, expected_schema, expected_host, expected_port, expected_path, expected_error) \
+	do {                                                                                                      \
+		int port;                                                                                             \
+		String url(url_to_parse), schema, host, path;                                                         \
+                                                                                                              \
+		CHECK_EQ(expected_error, url.parse_url(schema, host, port, path));                                    \
+		CHECK_EQ(expected_schema, schema);                                                                    \
+		CHECK_EQ(expected_host, host);                                                                        \
+		CHECK_EQ(expected_path, path);                                                                        \
+		CHECK_EQ(expected_port, port);                                                                        \
+	} while (false)
+
+	// Valid URLs
+	CHECK_URL("https://godotengine.org", "https://", "godotengine.org", 0, "", Error::OK);
+	CHECK_URL("https://godotengine.org/", "https://", "godotengine.org", 0, "/", Error::OK);
+	CHECK_URL("godotengine.org/", "", "godotengine.org", 0, "/", Error::OK);
+	CHECK_URL("HTTPS://godotengine.org/", "https://", "godotengine.org", 0, "/", Error::OK);
+	CHECK_URL("https://GODOTENGINE.ORG/", "https://", "godotengine.org", 0, "/", Error::OK);
+	CHECK_URL("http://godotengine.org", "http://", "godotengine.org", 0, "", Error::OK);
+	CHECK_URL("https://godotengine.org:8080", "https://", "godotengine.org", 8080, "", Error::OK);
+	CHECK_URL("https://godotengine.org/blog", "https://", "godotengine.org", 0, "/blog", Error::OK);
+	CHECK_URL("https://godotengine.org/blog/", "https://", "godotengine.org", 0, "/blog/", Error::OK);
+	CHECK_URL("https://godotengine.org/download/macos", "https://", "godotengine.org", 0, "/download/macos", Error::OK);
+	CHECK_URL("https://me:secret@godotengine.org", "https://", "godotengine.org", 0, "", Error::OK);
+	CHECK_URL("https://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]/ipv6", "https://", "fedc:ba98:7654:3210:fedc:ba98:7654:3210", 0, "/ipv6", Error::OK);
+
+	// Invalid URLs
+
+	// Multiple ports
+	CHECK_URL("https://godotengine.org:8080:433", "https://", "", 0, "", Error::ERR_INVALID_PARAMETER);
+	// Missing ] on literal IPv6
+	CHECK_URL("https://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210/ipv6", "https://", "", 0, "/ipv6", Error::ERR_INVALID_PARAMETER);
+	// Missing host
+	CHECK_URL("https:///blog", "https://", "", 0, "/blog", Error::ERR_INVALID_PARAMETER);
+	// Invalid ports
+	CHECK_URL("https://godotengine.org:notaport", "https://", "godotengine.org", 0, "", Error::ERR_INVALID_PARAMETER);
+	CHECK_URL("https://godotengine.org:-8080", "https://", "godotengine.org", -8080, "", Error::ERR_INVALID_PARAMETER);
+	CHECK_URL("https://godotengine.org:88888", "https://", "godotengine.org", 88888, "", Error::ERR_INVALID_PARAMETER);
+#undef CHECK_URL
+}
+
 TEST_CASE("[Stress][String] Empty via ' == String()'") {
 	for (int i = 0; i < 100000; ++i) {
 		String str = "Hello World!";
