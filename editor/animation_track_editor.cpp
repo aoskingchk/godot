@@ -4476,6 +4476,19 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 	}
 
 	undo_redo->add_do_method(animation.ptr(), "track_insert_key", p_id.track_idx, time, value);
+	if (!created && p_id.type == Animation::TYPE_BEZIER) {
+		int k_idx = animation->track_find_key(p_id.track_idx, time) + 1;
+		switch (int(EDITOR_GET("editors/animation/default_bezier_key_behavior"))) {
+			case Animation::DEFAULT_BEZIER_KEY_BEHAVIOR_BALANCED_AUTOMATIC: {
+				undo_redo->add_do_method(this, "_bezier_track_set_key_handle_mode", animation.ptr(), p_id.track_idx, k_idx, Animation::HANDLE_MODE_BALANCED, Animation::HANDLE_SET_MODE_AUTO);
+				break;
+			}
+			case Animation::DEFAULT_BEZIER_KEY_BEHAVIOR_MIRRORED_AUTOMATIC: {
+				undo_redo->add_do_method(this, "_bezier_track_set_key_handle_mode", animation.ptr(), p_id.track_idx, k_idx, Animation::HANDLE_MODE_MIRRORED, Animation::HANDLE_SET_MODE_AUTO);
+				break;
+			}
+		}
+	}
 
 	if (created) {
 		// Just remove the track.
