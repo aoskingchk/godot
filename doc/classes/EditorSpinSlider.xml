@@ -51,4 +51,12 @@
 			</description>
 		</signal>
 	</signals>
+	<theme_items>
+		<theme_item name="updown" data_type="icon" type="Texture2D">
+			Single up/down graphic for both up/down buttons. Likely to be deprecated when individual up/down buttons will be implemented.
+		</theme_item>
+		<theme_item name="updown_disabled" data_type="icon" type="Texture2D">
+			Single up/down graphic for both up/down buttons, when the control is readonly or disabled. Likely to be deprecated when individual up/down buttons will be implemented.
+		</theme_item>
+	</theme_items>
 </class>
