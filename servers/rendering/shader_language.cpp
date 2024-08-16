@@ -4086,6 +4086,286 @@ Variant ShaderLanguage::constant_value_to_variant(const Vector<ShaderLanguage::C
 	return Variant();
 }
 
+Variant ShaderLanguage::get_default_datatype_value(DataType p_type, int p_array_size, ShaderLanguage::ShaderNode::Uniform::Hint p_hint) {
+	int array_size = p_array_size;
+
+	Variant value;
+	switch (p_type) {
+		case ShaderLanguage::TYPE_BOOL:
+			if (array_size > 0) {
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(false);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(false);
+			}
+			break;
+		case ShaderLanguage::TYPE_BVEC2:
+			array_size *= 2;
+
+			if (array_size > 0) {
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(false);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(0);
+			}
+			break;
+		case ShaderLanguage::TYPE_BVEC3:
+			array_size *= 3;
+
+			if (array_size > 0) {
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(false);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(0);
+			}
+			break;
+		case ShaderLanguage::TYPE_BVEC4:
+			array_size *= 4;
+
+			if (array_size > 0) {
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(false);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(0);
+			}
+			break;
+		case ShaderLanguage::TYPE_INT:
+			if (array_size > 0) {
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(0);
+			}
+			break;
+		case ShaderLanguage::TYPE_IVEC2:
+			if (array_size > 0) {
+				array_size *= 2;
+
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(Vector2i(0, 0));
+			}
+			break;
+		case ShaderLanguage::TYPE_IVEC3:
+			if (array_size > 0) {
+				array_size *= 3;
+
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(Vector3i(0, 0, 0));
+			}
+			break;
+		case ShaderLanguage::TYPE_IVEC4:
+			if (array_size > 0) {
+				array_size *= 4;
+
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(Vector4i(0, 0, 0, 0));
+			}
+			break;
+		case ShaderLanguage::TYPE_UINT:
+			if (array_size > 0) {
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0U);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(0U);
+			}
+			break;
+		case ShaderLanguage::TYPE_UVEC2:
+			if (array_size > 0) {
+				array_size *= 2;
+
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0U);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(Vector2i(0U, 0U));
+			}
+			break;
+		case ShaderLanguage::TYPE_UVEC3:
+			if (array_size > 0) {
+				array_size *= 3;
+
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0U);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(Vector3i(0U, 0U, 0U));
+			}
+			break;
+		case ShaderLanguage::TYPE_UVEC4:
+			if (array_size > 0) {
+				array_size *= 4;
+
+				PackedInt32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0U);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(Vector4i(0U, 0U, 0U, 0U));
+			}
+			break;
+		case ShaderLanguage::TYPE_FLOAT:
+			if (array_size > 0) {
+				PackedFloat32Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(0.0f);
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(0.0f);
+			}
+			break;
+		case ShaderLanguage::TYPE_VEC2:
+			if (array_size > 0) {
+				PackedVector2Array array;
+				for (int i = 0; i < array_size; i++) {
+					array.push_back(Vector2(0.0f, 0.0f));
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(Vector2(0.0f, 0.0f));
+			}
+			break;
+		case ShaderLanguage::TYPE_VEC3:
+			if (array_size > 0) {
+				if (p_hint == ShaderLanguage::ShaderNode::Uniform::HINT_SOURCE_COLOR) {
+					PackedColorArray array;
+					for (int i = 0; i < array_size; i++) {
+						array.push_back(Color(0.0f, 0.0f, 0.0f));
+					}
+					value = Variant(array);
+				} else {
+					PackedVector3Array array;
+					for (int i = 0; i < array_size; i++) {
+						array.push_back(Vector3(0.0f, 0.0f, 0.0f));
+					}
+					value = Variant(array);
+				}
+			} else {
+				if (p_hint == ShaderLanguage::ShaderNode::Uniform::HINT_SOURCE_COLOR) {
+					value = Variant(Color(0.0f, 0.0f, 0.0f));
+				} else {
+					value = Variant(Vector3(0.0f, 0.0f, 0.0f));
+				}
+			}
+			break;
+		case ShaderLanguage::TYPE_VEC4:
+			if (array_size > 0) {
+				if (p_hint == ShaderLanguage::ShaderNode::Uniform::HINT_SOURCE_COLOR) {
+					PackedColorArray array;
+					for (int i = 0; i < array_size; i++) {
+						array.push_back(Color(0.0f, 0.0f, 0.0f, 0.0f));
+					}
+					value = Variant(array);
+				} else {
+					PackedVector4Array array;
+					for (int i = 0; i < array_size; i++) {
+						array.push_back(Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+					}
+					value = Variant(array);
+				}
+			} else {
+				if (p_hint == ShaderLanguage::ShaderNode::Uniform::HINT_SOURCE_COLOR) {
+					value = Variant(Color(0.0f, 0.0f, 0.0f, 0.0f));
+				} else {
+					value = Variant(Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+				}
+			}
+			break;
+		case ShaderLanguage::TYPE_MAT2:
+			if (array_size > 0) {
+				PackedFloat32Array array;
+				for (int i = 0; i < array_size; i++) {
+					for (int j = 0; j < 4; j++) {
+						array.push_back(0.0f);
+					}
+				}
+				value = Variant(array);
+			} else {
+				value = Variant(Transform2D(
+						Vector2(1.0, 0.0),
+						Vector2(0.0, 1.0), Vector2()));
+			}
+			break;
+		case ShaderLanguage::TYPE_MAT3: {
+			if (array_size > 0) {
+				PackedFloat32Array array;
+				for (int i = 0; i < array_size; i++) {
+					for (int j = 0; j < 9; j++) {
+						array.push_back(0.0f);
+					}
+				}
+				value = Variant(array);
+			} else {
+				Basis p(Vector3(1.0, 0.0, 0.0),
+						Vector3(0.0, 1.0, 0.0),
+						Vector3(0.0, 0.0, 1.0));
+				value = Variant(p);
+			}
+			break;
+		}
+		case ShaderLanguage::TYPE_MAT4: {
+			if (array_size > 0) {
+				PackedFloat32Array array;
+				for (int i = 0; i < array_size; i++) {
+					for (int j = 0; j < 16; j++) {
+						array.push_back(0.0f);
+					}
+				}
+				value = Variant(array);
+			} else {
+				Projection p = Projection(
+						Vector4(1.0f, 0.0f, 0.0f, 0.0f),
+						Vector4(0.0f, 1.0f, 0.0f, 0.0f),
+						Vector4(0.0f, 0.0f, 1.0f, 0.0f),
+						Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+				value = Variant(p);
+			}
+			break;
+		}
+		default: {
+		} break;
+	}
+	return value;
+}
+
 PropertyInfo ShaderLanguage::uniform_to_property_info(const ShaderNode::Uniform &p_uniform) {
 	PropertyInfo pi;
 	switch (p_uniform.type) {
