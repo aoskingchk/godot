@@ -145,11 +145,6 @@ class GodotGLRenderView extends GLSurfaceView implements GodotRenderView {
 	}
 
 	@Override
-	public void onBackPressed() {
-		godot.onBackPressed();
-	}
-
-	@Override
 	public GodotInputHandler getInputHandler() {
 		return inputHandler;
 	}
